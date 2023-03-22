@@ -1,4 +1,6 @@
-﻿Shader "mattatz/MaskBloom" {
+﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
+Shader "mattatz/MaskBloom" {
 
 	Properties {
 		_MainTex("Texture", 2D) = "white" {}
@@ -52,7 +54,7 @@
 
 		vs2psDown vertDownsample(vsin IN) {
 			vs2psDown OUT;
-			OUT.vertex = mul(UNITY_MATRIX_MVP, IN.vertex);
+			OUT.vertex = UnityObjectToClipPos(IN.vertex);
 			OUT.uv[0] = IN.uv;
 			OUT.uv[1] = IN.uv + float2(-0.5, -0.5) * _MainTex_TexelSize.xy;
 			OUT.uv[2] = IN.uv + float2(0.5, -0.5) * _MainTex_TexelSize.xy;
@@ -75,7 +77,7 @@
 
 		vs2psBlur vertBlurH(vsin IN) {
 			vs2psBlur OUT;
-			OUT.vertex = mul(UNITY_MATRIX_MVP, IN.vertex);
+			OUT.vertex = UnityObjectToClipPos(IN.vertex);
 			for (uint i = 0; i < 8; i++) {
 				OUT.uv[i] = IN.uv + float2(OFFSETS[i], 0) * _MainTex_TexelSize.xy;
 			}
@@ -84,7 +86,7 @@
 
 		vs2psBlur vertBlurV(vsin IN) {
 			vs2psBlur OUT;
-			OUT.vertex = mul(UNITY_MATRIX_MVP, IN.vertex);
+			OUT.vertex = UnityObjectToClipPos(IN.vertex);
 			for (uint i = 0; i < 8; i++) {
 				OUT.uv[i] = IN.uv + float2(0, OFFSETS[i]) * _MainTex_TexelSize.xy;
 			}
@@ -102,7 +104,7 @@
 
 		v2f vert(appdata_img v) {
 			v2f o;
-			o.pos = mul(UNITY_MATRIX_MVP, v.vertex);
+			o.pos = UnityObjectToClipPos(v.vertex);
 
 			o.uv[0] = v.texcoord.xy;
 			o.uv[1] = v.texcoord.xy;
