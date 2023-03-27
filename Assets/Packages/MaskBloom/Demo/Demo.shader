@@ -5,10 +5,19 @@
 		_Glossiness ("Smoothness", Range(0,1)) = 0.5
 		_Metallic ("Metallic", Range(0,1)) = 0.0
 		_Alpha ("Alpha", Range(0, 1)) = 1.0
+		[IntRange] _StencilRef("Stencil Reference Value", Range(0,255)) = 1
 	}
 	SubShader {
 		Tags { "RenderType"="Opaque" }
 		LOD 200
+
+		Stencil
+		{
+			Ref [_StencilRef]
+			WriteMask [_StencilRef]
+			Comp Always
+			Pass Replace
+		}
 		
 		CGPROGRAM
 

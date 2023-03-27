@@ -5,7 +5,8 @@ Shader "mattatz/MaskBloom" {
 	Properties {
 		_MainTex("Texture", 2D) = "white" {}
 		_BlurTex("Blur", 2D) = "white" {}
-		_Intensity("Bloom intensity", Float) = 1.0
+		_Intensity("Bloom intensity", float) = 1.0
+		[IntRange] _StencilRef("Stencil Reference Value", Range(0,255)) = 2
 	}
 
 	SubShader {
@@ -136,6 +137,12 @@ Shader "mattatz/MaskBloom" {
 			return mask(screencolor, result);
 		}
 
+		half4 fragRevertAlpha(v2f i) : SV_Target{
+			half4 c = tex2D(_MainTex, i.uv[0].xy);
+			c.a = 1.0;
+			return c;
+		}
+
 		ENDCG
 
 		// 0 : Downsample
@@ -186,6 +193,22 @@ Shader "mattatz/MaskBloom" {
 			ENDCG
 		}
 
+
+		// 6 : Revert Alpha
+		Pass {
+			Stencil
+			{
+				Ref [_StencilRef]
+				ReadMask [_StencilRef]
+				Comp Equal
+				Pass Keep
+			}
+
+			CGPROGRAM
+			#pragma vertex vert
+			#pragma fragment fragRevertAlpha
+			ENDCG
+		}
 	}
 
 }
